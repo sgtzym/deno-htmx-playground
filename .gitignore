@@ -1,0 +1,10 @@
+*.db
+*.db-*
+*.env
+
+public/**/*.js
+public/**/*.css
+
+node_modules/
+
+**/*.bru

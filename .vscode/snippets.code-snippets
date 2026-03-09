@@ -1,0 +1,11 @@
+{
+    "Section divider": {
+        "prefix": "---",
+        "body": [
+            "// ----------------------------------------------------------------------------",
+            "// ${1:title}",
+            ""
+        ],
+        "description": "Inserts a section divider with a title."
+    }
+}

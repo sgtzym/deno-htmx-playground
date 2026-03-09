@@ -1,0 +1,55 @@
+{
+	"tasks": {
+		"css": "deno run -A npm:@tailwindcss/cli -i ./src/styles/app.css -o ./public/app.css",
+		"css:watch": "deno run -A npm:@tailwindcss/cli -i ./src/styles/app.css -o ./public/app.css --watch --silent",
+		"css:build": "deno run -A npm:@tailwindcss/cli -i ./src/styles/app.css -o ./public/app.css --minify",
+		"copy:assets": "deno run -A ./scripts/copy_assets.ts",
+		"dev": "deno task css:watch & deno run -A --watch ./src/main.ts"
+	},
+	"compilerOptions": {
+		"types": [
+			"./types/global.d.ts"
+		],
+		"jsx": "precompile",
+		"jsxImportSource": "@hono/hono/jsx"
+	},
+	"imports": {
+		"@db/sqlite": "jsr:@db/sqlite@^0.13.0",
+		"@hono/hono": "jsr:@hono/hono@^4.12.5",
+		"@sgtzym/sparq": "jsr:@sgtzym/sparq@^0.9.13",
+		"@tailwindcss/typography": "npm:@tailwindcss/typography@^0.5.19",
+		"alpinejs": "npm:alpinejs@^3.15.8",
+		"daisyui": "npm:daisyui@^5.5.19",
+		"htmx.org": "npm:htmx.org@^2.0.8",
+		"tailwindcss": "npm:tailwindcss@^4.2.1",
+
+		"@std/dotenv": "jsr:@std/dotenv@^0.225.6",
+		"@std/fs": "jsr:@std/fs@^1.0.23",
+		"@std/path": "jsr:@std/path@^1.1.4",
+		"@std/uuid": "jsr:@std/uuid@^1.1.0",
+
+		"~app/": "./src/app/",
+		"~entities/": "./src/entities/",
+		"~lib/": "./src/lib/",
+		"~routes/": "./src/routes/",
+		"~web/": "./src/web/"
+	},
+	"nodeModulesDir": "auto",
+	"fmt": {
+		"exclude": ["./public/"],
+
+		"indentWidth": 4,
+		"lineWidth": 100,
+		"semiColons": false,
+		"singleQuote": true,
+		"useTabs": true,
+
+		"bracePosition": "sameLineUnlessHanging",
+		"trailingCommas": "onlyMultiLine",
+		"quoteProps": "asNeeded",
+
+		"jsx.bracketPosition": "sameLine",
+		"jsx.forceNewLinesSurroundingContent": false,
+		"jsx.multiLineParens": "always"
+	}
+}
