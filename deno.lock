@@ -483,6 +483,7 @@
       "jsr:@db/sqlite@0.13",
       "jsr:@hono/hono@^4.12.5",
       "jsr:@sgtzym/sparq@~0.9.13",
+      "jsr:@std/crypto@^1.0.5",
       "jsr:@std/dotenv@~0.225.6",
       "jsr:@std/fs@^1.0.23",
       "jsr:@std/path@^1.1.4",

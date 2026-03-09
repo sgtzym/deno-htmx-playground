@@ -1,6 +1,6 @@
-interface HomePageProps {}
+interface HomeProps {}
 
-export function HomePage({}: HomePageProps) {
+export function Home({}: HomeProps) {
 	return (
 		<>
 			<h1>Deno HTXM Template</h1>

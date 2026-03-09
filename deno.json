@@ -23,6 +23,7 @@
 		"htmx.org": "npm:htmx.org@^2.0.8",
 		"tailwindcss": "npm:tailwindcss@^4.2.1",
 
+		"@std/crypto": "jsr:@std/crypto@^1.0.5",
 		"@std/dotenv": "jsr:@std/dotenv@^0.225.6",
 		"@std/fs": "jsr:@std/fs@^1.0.23",
 		"@std/path": "jsr:@std/path@^1.1.4",

@@ -1,14 +1,16 @@
+import { timingSafeEqual } from '@std/crypto'
+
 /**
- * Hashes a plain-text password using PBKDF2-SHA256.
+ * Hashes a secret string using PBKDF2-SHA256.
  *
- * @param password - Plain-text password to hash.
+ * @param secret - Plain-text secret to hash.
  * @returns Base64-encoded hash string.
  */
-export async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(secret: string): Promise<string> {
 	const encoder = new TextEncoder()
 	const keyMaterial = await crypto.subtle.importKey(
 		'raw',
-		encoder.encode(password),
+		encoder.encode(secret),
 		'PBKDF2',
 		false,
 		['deriveBits'],
@@ -21,7 +23,6 @@ export async function hashPassword(password: string): Promise<string> {
 		256,
 	)
 
-	// Encode salt + hash for verification
 	const hashArray = new Uint8Array(bits)
 	const combined = new Uint8Array(salt.length + hashArray.length)
 	combined.set(salt)
@@ -31,12 +32,12 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 /**
- * Verifies a plain-text password against a stored hash.
+ * Verifies a secret string using stored PBKDF2 hash.
  *
- * @param password - Plain-text password to verify.
+ * @param secret - Plain-text password to verify.
  * @param stored - Previously hashed value from {@link hashPassword}.
  */
-export async function verifyPassword(password: string, stored: string): Promise<boolean> {
+export async function verifyPassword(secret: string, stored: string): Promise<boolean> {
 	const combined = Uint8Array.from(atob(stored), (c) => c.charCodeAt(0))
 	const salt = combined.slice(0, 16)
 	const storedHash = combined.slice(16)
@@ -44,7 +45,7 @@ export async function verifyPassword(password: string, stored: string): Promise<
 	const encoder = new TextEncoder()
 	const keyMaterial = await crypto.subtle.importKey(
 		'raw',
-		encoder.encode(password),
+		encoder.encode(secret),
 		'PBKDF2',
 		false,
 		['deriveBits'],
@@ -56,6 +57,5 @@ export async function verifyPassword(password: string, stored: string): Promise<
 		256,
 	)
 
-	const newHash = new Uint8Array(bits)
-	return storedHash.every((byte, i) => byte === newHash[i])
+	return timingSafeEqual(storedHash, new Uint8Array(bits))
 }

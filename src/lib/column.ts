@@ -1,7 +1,7 @@
 import { column } from '@sgtzym/sparq'
 
 export type AuditColumn = {
-	id: string
+	systemId: string
 	createdAt: Date
 	updatedAt: Date
 	active: boolean
@@ -13,7 +13,7 @@ export type Mutable<T> = Omit<T, keyof AuditColumn>
 /** Returns standard audit columns for a Sparq schema. */
 export function auditColumns() {
 	return {
-		id: column.text({ primaryKey: true, notNull: true }),
+		systemId: column.text({ primaryKey: true, notNull: true }),
 		createdAt: column.date({ notNull: true, default: 'CURRENT_TIMESTAMP' }),
 		updatedAt: column.date({ notNull: true, default: 'CURRENT_TIMESTAMP' }),
 		active: column.boolean({ notNull: true, default: true }),
