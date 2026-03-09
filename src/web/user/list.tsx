@@ -1,17 +1,17 @@
-import type { SafeUser } from '~entities/user.ts'
+import { type User } from '~entities/user.ts'
 
 interface UserListProps {
-	users: SafeUser[]
+	users: Omit<User, 'password'>[]
 }
 
 export function UserList({ users }: UserListProps) {
 	return (
-		<ul class='list bg-base-100 rounded-box shadow-md'>
+		<ul class='list'>
 			{users.map((u) => (
-				<li key={u.systemId} class='list-row'>
+				<li key={u.id} class='list-row'>
 					<div class='list-col-grow'>
 						<p class='font-medium'>{u.name}</p>
-						<p class='text-sm text-base-content/60'>{u.email}</p>
+						<p class='text-sm'>{u.email}</p>
 					</div>
 				</li>
 			))}

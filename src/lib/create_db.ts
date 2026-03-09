@@ -1,6 +1,5 @@
 import { Database, type DatabaseOpenOptions } from '@db/sqlite'
 import { Sparq, type SqlParam } from '@sgtzym/sparq'
-import { v7 } from '@std/uuid'
 
 interface Pragmas {
 	busy_timeout?: number
@@ -55,16 +54,6 @@ export default function createDatabase(
 		/** Executes a statement without returning rows. */
 		exec(sql: string, params: readonly SqlParam[]): void {
 			client.exec(sql, ...params)
-		},
-
-		/** Generates a new UUID v7. */
-		get id(): string {
-			return v7.generate()
-		},
-
-		/** Returns the current time as an ISO 8601 string. */
-		get timestamp(): string {
-			return new Date().toISOString()
 		},
 	}
 }

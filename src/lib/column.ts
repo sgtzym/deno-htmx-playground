@@ -1,19 +1,22 @@
 import { column } from '@sgtzym/sparq'
 
 export type AuditColumn = {
-	systemId: string
+	id: string
 	createdAt: Date
 	updatedAt: Date
 	active: boolean
 }
 
-/** Omits auto-managed audit fields from a record type. */
-export type Mutable<T> = Omit<T, keyof AuditColumn>
+/** All non-audit fields required – for insert operations. */
+export type Insertable<T> = Omit<T, keyof AuditColumn>
+
+/** All non-audit fields optional – for patch operations. */
+export type Patchable<T> = Partial<Omit<T, keyof AuditColumn>>
 
 /** Returns standard audit columns for a Sparq schema. */
 export function auditColumns() {
 	return {
-		systemId: column.text({ primaryKey: true, notNull: true }),
+		id: column.text({ primaryKey: true, notNull: true }),
 		createdAt: column.date({ notNull: true, default: 'CURRENT_TIMESTAMP' }),
 		updatedAt: column.date({ notNull: true, default: 'CURRENT_TIMESTAMP' }),
 		active: column.boolean({ notNull: true, default: true }),

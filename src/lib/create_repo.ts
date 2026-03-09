@@ -1,23 +1,21 @@
 import type { Select, Sparq, SqlNodeValue, TextColumn } from '@sgtzym/sparq'
 
 import { db } from '~app/db.ts'
-import type { AuditColumn, Mutable } from '~lib/column.ts'
+import type { AuditColumn, Insertable, Patchable } from '~lib/column.ts'
+
+import { now, uid } from './utils.ts'
 
 export interface Repo<T> {
-	create(data: Mutable<T>): T | null
+	create(data: Insertable<T>): T | null
 	find(id: string): T | null
 	findOne(filters: Partial<T>): T | null
 	findMany(filters?: Partial<T>): T[]
 	query(build: (q: Select) => Select): T[]
-	update(id: string, data: Partial<Mutable<T>>): T | null
-	delete(id: string, force?: boolean): T | null
+	update(id: string, data: Patchable<T>): T | null
+	delete(id: string, force?: boolean): string | null
 }
 
-/**
- * Creates a generic CRUD repository for a Sparq schema.
- *
- * @param schema - The Sparq schema to build the repository for.
- */
+/** Creates a CRUD repository for a Sparq schema. */
 export default function createRepo<T extends AuditColumn>(schema: Sparq<any>): Repo<T> {
 	const { $ } = schema
 	const pk = Object.keys($).find((key) => $[key].options?.primaryKey) ?? 'id'
@@ -34,22 +32,37 @@ export default function createRepo<T extends AuditColumn>(schema: Sparq<any>): R
 
 	return {
 		/** Creates a record and returns it, or `null` on failure. */
-		create(data: Mutable<T>): T | null {
-			const id = db.id
-			const columns = ['id', ...Object.keys(data)]
-			const values = [id, ...Object.values(data)]
+		create(data: Insertable<T>): T | null {
+			const id = uid()
+			const timestamp = now()
+
+			// Omits undefined values so SQLite can apply column defaults.
+			const rec = Object.fromEntries(
+				Object.entries({
+					active: true,
+					...data,
+					[pk]: id,
+					createdAt: timestamp,
+					updatedAt: timestamp,
+				}).filter(([_, v]) => v !== undefined),
+			)
+
+			const columns = Object.keys(rec)
+			const values = Object.values(rec)
 
 			const q = schema
 				.insert(...columns.map((k) => $[k]))
 				.values(...values as SqlNodeValue[])
 
 			db.exec(q.sql, q.params)
+
 			return this.find(id)
 		},
 
 		/** Returns a record by primary key, or `null`. */
 		find(id: string): T | null {
 			const q = schema.select().where($[pk].eq(id))
+
 			return db.get<T>(q.sql, q.params)
 		},
 
@@ -58,45 +71,49 @@ export default function createRepo<T extends AuditColumn>(schema: Sparq<any>): R
 			const q = schema.select()
 			const conds = conditions(filters)
 			if (conds.length > 0) q.where(...conds)
+
 			return db.get<T>(q.sql, q.params)
 		},
 
-		/** Returns all records, optionally filtered. Strings use LIKE matching. */
+		/** Returns all records matching optional filters. Strings use LIKE matching. */
 		findMany(filters?: Partial<T>): T[] {
 			const q = schema.select()
 			if (!filters) return db.all<T>(q.sql, q.params)
+
 			const conds = conditions(filters, true)
 			if (conds.length > 0) q.where(...conds)
+
 			return db.all<T>(q.sql, q.params)
 		},
 
-		/** Runs a custom query built with the Sparq query builder. */
+		/** Returns records matching a custom query. */
 		query(build: (q: Select) => Select): T[] {
 			const q = build(schema.select())
+
 			return db.all<T>(q.sql, q.params)
 		},
 
-		/** Updates a record by id and returns the updated record, or `null`. */
-		update(id: string, data: Partial<Mutable<T>>): T | null {
+		/** Updates a record by primary key and returns it, or `null` on failure. */
+		update(id: string, data: Patchable<T>): T | null {
 			const q = schema
-				.update({ ...data, updatedAt: db.timestamp })
+				.update({ ...data, updatedAt: now() })
 				.where($[pk].eq(id))
 			db.exec(q.sql, q.params)
+
 			return this.find(id)
 		},
 
 		/**
-		 * Deletes a record by id and returns it, or `null`.
-		 *
-		 * Soft-deletes by default (`active = false`). Pass `force = true` to hard-delete.
+		 * Deletes a record by primary key and returns its id, or `null`. Soft-deletes (`active = false`) by default.
+		 * @param force - Hard-deletes the record, if set.
 		 */
-		delete(id: string, force?: boolean): T | null {
+		delete(id: string, force?: boolean): string | null {
 			const item = this.find(id)
 			if (!item) return null
 
 			if (item.active && !force) {
 				const q = schema
-					.update([$.active.to(false), $.updatedAt.to(db.timestamp)])
+					.update({ active: false, updatedAt: now() })
 					.where($[pk].eq(id))
 				db.exec(q.sql, q.params)
 			} else {
@@ -104,7 +121,7 @@ export default function createRepo<T extends AuditColumn>(schema: Sparq<any>): R
 				db.exec(q.sql, q.params)
 			}
 
-			return item
+			return item.id
 		},
 	}
 }

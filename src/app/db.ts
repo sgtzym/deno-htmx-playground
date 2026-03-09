@@ -1,4 +1,4 @@
-import { model as userModel } from '~entities/user.ts'
+import { model as user } from '~entities/user.ts'
 import createDatabase from '~lib/create_db.ts'
 import { ensureDir } from '~lib/utils.ts'
 
@@ -13,6 +13,6 @@ export const db = createDatabase(cfg.isTest ? ':memory:' : cfg.path.db, {
 	synchronous: 'normal',
 })
 
-db.init([userModel])
+db.init([user])
 
 export default db

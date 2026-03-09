@@ -1,9 +1,9 @@
-import type { SafeUser } from '~entities/user.ts'
+import { type User } from '~entities/user.ts'
 
 import { UserList } from './list.tsx'
 
 interface UserListPageProps {
-	users: SafeUser[]
+	users: Omit<User, 'password'>[]
 }
 
 export function UserListPage({ users }: UserListPageProps) {

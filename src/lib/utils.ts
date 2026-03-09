@@ -1,5 +1,12 @@
 import { ensureDir as _ensureDir } from '@std/fs'
 import { dirname, extname } from '@std/path'
+import { v7 } from '@std/uuid'
+
+// ----------------------------------------------------------------------------
+// Misc.
+
+export const now = () => new Date().toISOString()
+export const uid = () => v7.generate()
 
 // ----------------------------------------------------------------------------
 // Format

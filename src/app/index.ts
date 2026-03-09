@@ -6,11 +6,15 @@ import { api, web } from '~routes/index.tsx'
 import cfg from './config.ts'
 import { htmlErr, htmlNotFound, jsonErr, jsonNotFound } from './middleware/error_handler.ts'
 
-const isApi = (c: Context) => c.req.path.startsWith(cfg.path.api)
+const handleErr = (err: Error, c: Context) =>
+	c.req.path.startsWith(cfg.path.api) ? jsonErr(err, c) : htmlErr(err, c)
+
+const handleNotFound = (c: Context) =>
+	c.req.path.startsWith(cfg.path.api) ? jsonNotFound(c) : htmlNotFound(c)
 
 export const app = new Hono()
 	.use(`/public/*`, serveStatic({ root: './' }))
-	.onError((err, c) => isApi(c) ? jsonErr(err, c) : htmlErr(err, c))
-	.notFound((c) => isApi(c) ? jsonNotFound(c) : htmlNotFound(c))
+	.onError(handleErr)
+	.notFound(handleNotFound)
 	.route(cfg.path.api, api)
 	.route('/', web)

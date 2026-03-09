@@ -8,14 +8,13 @@ import createRepo from '~lib/create_repo.ts'
 
 export const model = sparq('user', {
 	...auditColumns(),
-	name: column.text({ notNull: true }),
+	name: column.text({ notNull: true, unique: true }),
 	email: column.text({ notNull: true, unique: true }),
 	password: column.text({ notNull: true }),
 	alias: column.text(),
 })
 
 export type User = Rec<typeof model>
-export type SafeUser = Omit<User, 'password'>
 
 // ----------------------------------------------------------------------------
 // Repo

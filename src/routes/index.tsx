@@ -1,16 +1,15 @@
 import { Hono } from '@hono/hono'
 
 import { logger } from '~app/middleware/logger.ts'
-import { api as userApi } from '~routes/user_api.ts'
-import { web as userWeb } from '~routes/user_web.tsx'
-import { Home } from '~web/views/home.tsx'
+import { api as usersApi, web as usersWeb } from '~routes/users.tsx'
 import { render } from '~web/shared/render.tsx'
+import { Home } from '~web/views/home.tsx'
 
 export const api = new Hono()
 	.use('*', logger)
-	.route('/users', userApi)
+	.route('/users', usersApi)
 
 export const web = new Hono()
 	.use('*', logger)
 	.get('/', (c) => render(c, { page: () => <Home /> }))
-	.route('/users', userWeb)
+	.route('/users', usersWeb)
