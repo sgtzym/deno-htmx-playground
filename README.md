@@ -1,7 +1,9 @@
-# Deno HTMX Template
+# Deno HTMX Test
 
 Build server-rendered web apps with [Deno](https://deno.com) 🦕 – using SQLite, Hono, HTMX, and
 Alpine.
+
+**Note:** This is a playground repo for testing the stack.
 
 ## Stack
 
@@ -65,8 +67,8 @@ Create `.env` and adjust as needed.
 
 ## Adding Entities
 
-1. Create `src/entities/my_entity.ts` incl. a `sparq()` model and `createRepo()`.
-2. Add the model to `src/app/db.ts` (`db.init([...])`).
-3. Create `src/routes/my_entity_api.ts` and/or `src/routes/my_entity_web.tsx`.
-4. Register the routes in `src/routes/index.ts`.
+1. Create `~entities/my_entity/model.ts` incl. a `sparq()` model and `~entities/my_entity/repo.ts` via `createRepo()`.
+2. Add the model to `src/core/db.ts` (`db.init([...])`).
+3. Create `~entities/my_entity/api.ts` and/or `~entities/my_entity/ui.ts`.
+4. Register the routes in `~core/app.ts`.
 5. Add pages and JSX components as needed in `src/web/my_entity/`.
