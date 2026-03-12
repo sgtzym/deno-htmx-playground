@@ -1,9 +1,9 @@
 # Deno HTMX Test
 
-Build server-rendered web apps with [Deno](https://deno.com) 🦕 – using SQLite, Hono, HTMX, and
+Building server-rendered web apps with [Deno](https://deno.com) 🦕 – using SQLite, Hono, HTMX, and
 Alpine.
 
-**Note:** This is a playground repo for testing the stack.
+**Note:** This is a playground repo for testing the stack and educational purposes only - use at own risk.
 
 ## Stack
 
